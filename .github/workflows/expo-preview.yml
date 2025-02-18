@@ -1,0 +1,139 @@
+name: Expo QR Code Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: 📦 Install dependencies
+        run: npm install
+
+      - name: 🏗 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 🚀 Create preview and extract details
+        id: create-preview
+        run: |
+          OUTPUT=$(eas update --auto --branch ${{ github.event.pull_request.head.ref }})
+          echo "$OUTPUT"
+
+          # Extract the Update Group ID (groupId)
+          GROUP_ID=$(echo "$OUTPUT" | grep -oP 'Update group ID\s+\K[\w-]+')
+
+          # Extract the EAS Dashboard URL
+          EAS_DASHBOARD_URL=$(echo "$OUTPUT" | grep -oP 'EAS Dashboard\s+\Khttps://expo.dev/accounts/[^ ]+')
+
+          # Parse the account name and project slug dynamically
+          ACCOUNT_NAME=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-3)}')
+          PROJECT_SLUG=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-1)}')
+
+          # Fetch the correct appId using `eas project:info`
+          echo "Fetching EAS Project Info..."
+          PROJECT_INFO=$(eas project:info)
+          echo "EAS Project Info Output: $PROJECT_INFO"
+
+          # Extract appId using grep instead of jq
+          APP_ID=$(echo "$PROJECT_INFO" | grep -oP 'ID\s+\K[\w-]+')
+
+          # Extract the last update timestamp (from commit timestamp)
+          COMMIT_TIMESTAMP=$(echo "$OUTPUT" | grep -oP 'Commit\s+\K[\w\d]+')
+
+          # Convert timestamp to readable UTC format
+          LAST_UPDATED=$(date -u -d "@$(git show -s --format=%ct $COMMIT_TIMESTAMP)" "+%b %-d, %Y %-I:%M%p UTC")
+
+          if [ -z "$APP_ID" ] || [ -z "$GROUP_ID" ] || [ -z "$ACCOUNT_NAME" ] || [ -z "$PROJECT_SLUG" ] || [ -z "$LAST_UPDATED" ]; then
+            echo "❌ Failed to extract required values."
+            exit 1
+          fi
+
+          DEEP_LINK="exp+://expo-development-client/?url=https://u.expo.dev/$APP_ID/group/$GROUP_ID"
+          UPDATE_LINK="https://expo.dev/accounts/$ACCOUNT_NAME/projects/$PROJECT_SLUG/updates/$GROUP_ID"
+          QR_CODE_URL="https://qr.expo.dev/eas-update?slug=exp&projectId=$APP_ID&groupId=$GROUP_ID&host=u.expo.dev&scale=2"
+
+          echo "Deep Link: $DEEP_LINK"
+          echo "UPDATE_LINK=$UPDATE_LINK" >> $GITHUB_ENV
+          echo "QR_CODE_URL=$QR_CODE_URL" >> $GITHUB_ENV
+          echo "LAST_UPDATED=$LAST_UPDATED" >> $GITHUB_ENV
+
+      - name: 📢 Update or Post Expo QR Code in PR
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const updateLink = process.env.UPDATE_LINK;
+            const qrCodeUrl = process.env.QR_CODE_URL;
+            const lastUpdated = process.env.LAST_UPDATED;
+
+            if (!updateLink || !qrCodeUrl || !lastUpdated) {
+              console.error("Missing update link, QR code URL, or last updated timestamp.");
+              return;
+            }
+
+            const { owner, repo, number } = context.issue;
+            const commentIdentifier = "🚀 **Expo Preview Ready!**"; // Unique identifier
+
+            // Generate comment body with QR Code
+            const commentBody = `
+            🚀 **Expo Preview Ready!** — *Updated: ${lastUpdated}*  
+
+            📱 Scan the QR code below to test on **Expo Dev Client**:  
+
+            ![Expo QR Code](${qrCodeUrl})  
+
+            <a href="${updateLink}" target="_blank"><strong>Open Expo Update ↗︎</strong></a>  
+
+            ---
+
+            🎩 *Made by [Torii Studio](https://torii.studio)*
+            `;
+
+            // Fetch existing comments
+            const comments = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: number
+            });
+
+            const existingComment = comments.data.find(comment =>
+              comment.body.includes(commentIdentifier)
+            );
+
+            if (existingComment) {
+              // Update the existing comment
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existingComment.id,
+                body: commentBody
+              });
+              console.info("✅ Updated existing Expo preview comment.");
+            } else {
+              // Create a new comment
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: number,
+                body: commentBody
+              });
+              console.info("✅ Created new Expo preview comment.");
+            }
