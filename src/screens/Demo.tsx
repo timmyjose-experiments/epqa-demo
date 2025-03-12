@@ -9,11 +9,11 @@ const Demo = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text>Testing</Text>
       <Pressable
         style={styles.button}
         onPress={() => navigation.navigate('Home')}>
         <Text>Home</Text>
-        <Text>Testing</Text>
       </Pressable>
     </SafeAreaView>
   )
