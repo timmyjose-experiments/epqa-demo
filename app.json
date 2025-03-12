@@ -14,7 +14,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.timmyjose.expopreviewqractiondemo"
+      "bundleIdentifier": "com.timmyjose.expopreviewqractiondemo",
+      "appleTeamId": "N8XNN99644"
     },
     "android": {
       "adaptiveIcon": {
