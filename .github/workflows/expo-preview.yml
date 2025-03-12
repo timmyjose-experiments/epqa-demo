@@ -44,7 +44,9 @@ jobs:
 
           # Parse the account name and project slug dynamically
           ACCOUNT_NAME=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-3)}')
+          echo "ACCOUNT_NAME = ${ACCOUNT_NAME}"
           PROJECT_SLUG=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-1)}')
+          echo "PROJECT_SLUG = ${PROJECT_SLUG}"
 
           # Fetch the correct appId using `eas project:info`
           echo "Fetching EAS Project Info..."

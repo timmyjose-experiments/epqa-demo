@@ -13,6 +13,7 @@ const Demo = () => {
         style={styles.button}
         onPress={() => navigation.navigate('Home')}>
         <Text>Home</Text>
+        <Text>Testing</Text>
       </Pressable>
     </SafeAreaView>
   )
