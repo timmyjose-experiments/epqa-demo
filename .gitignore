@@ -6,6 +6,7 @@ packages-lock.json
 android
 ios
 .vim
+link
 
 # Expo
 .expo/
