@@ -40,11 +40,19 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
+      - name: Get Current Branch
+        id: current_branch
+        run: echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
+
       - name: 🚀 Create preview and extract details
         id: create-preview
         run: |
-          OUTPUT=$(eas update --auto --branch ${{ github.event.pull_request.head.ref }})
-          echo "$OUTPUT"
+          echo "Using branch: ${{ env.branch }}"
+          OUTPUT=$(eas update --auto --branch "${{ env.branch }}" 2>&1) || {
+            echo "❌ EAS Update Failed!"
+            echo "$OUTPUT"
+            exit 1
+          }
 
           # Extract the Update Group ID (groupId)
           GROUP_ID=$(echo "$OUTPUT" | grep -oP 'Update group ID\s+\K[\w-]+')
