@@ -85,7 +85,7 @@ jobs:
 
           DEEP_LINK="exp+://expo-development-client/?url=https://u.expo.dev/$APP_ID/group/$GROUP_ID"
           UPDATE_LINK="https://expo.dev/accounts/$ACCOUNT_NAME/projects/$PROJECT_SLUG/updates/$GROUP_ID"
-          QR_CODE_URL="https://qr.expo.dev/eas-update?slug=exp&projectId=$APP_ID&groupId=$GROUP_ID&host=u.expo.dev&scale=2"
+          QR_CODE_URL="https://qr.expo.dev/eas-update?slug=${PROJECT_SLUG}&projectId=$APP_ID&groupId=$GROUP_ID&host=u.expo.dev&scale=2"
 
           echo "Deep Link: $DEEP_LINK"
           echo "UPDATE_LINK=$UPDATE_LINK" >> $GITHUB_ENV
