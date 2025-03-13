@@ -61,8 +61,8 @@ jobs:
           EAS_DASHBOARD_URL=$(echo "$OUTPUT" | grep -oP 'EAS Dashboard\s+\Khttps://expo.dev/accounts/[^ ]+')
 
           # Parse the account name and project slug dynamically
-          ACCOUNT_NAME=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-3)}')
-          PROJECT_SLUG=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-1)}')
+          ACCOUNT_NAME=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-4)}')
+          PROJECT_SLUG=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-2)}')
 
           # Fetch the correct appId using `eas project:info`
           echo "Fetching EAS Project Info..."
@@ -85,7 +85,7 @@ jobs:
 
           DEEP_LINK="exp+://expo-development-client/?url=https://u.expo.dev/$APP_ID/group/$GROUP_ID"
           UPDATE_LINK="https://expo.dev/accounts/$ACCOUNT_NAME/projects/$PROJECT_SLUG/updates/$GROUP_ID"
-          QR_CODE_URL="https://qr.expo.dev/eas-update?slug=exp&projectId=$APP_ID&groupId=$GROUP_ID&host=u.expo.dev&scale=2"
+          QR_CODE_URL="https://qr.expo.dev/eas-update?slug=${PROJECT_SLUG}&projectId=$APP_ID&groupId=$GROUP_ID&host=u.expo.dev&scale=2"
 
           echo "Deep Link: $DEEP_LINK"
           echo "UPDATE_LINK=$UPDATE_LINK" >> $GITHUB_ENV
