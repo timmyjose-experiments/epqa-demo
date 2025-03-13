@@ -8,13 +8,13 @@ jobs:
   check_comments:
     name: Check comments for /preview
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: Check for command
         id: command
         uses: xt0rted/slash-command-action@v1
         with:
-          token: ${{ secrets.GH_PAT }}
-          continue-on-error: true
+          repo-token: ${{ secrets.GH_PAT }}
           command: preview
           reaction: "true"
           reaction-type: rocket
