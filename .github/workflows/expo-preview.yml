@@ -1,4 +1,6 @@
-on: issue-comment
+on: 
+  issue_comment:
+    types: [created]
 name: Expo QR Code Preview
 permissions: write-all
 
@@ -11,7 +13,7 @@ jobs:
         id: command
         uses: xt0rted/slash-command-action@v1
         with:
-          token: ${{ secrets.GH+_PAT }}
+          token: ${{ secrets.GH_PAT }}
           continue-on-error: true
           command: preview
           reaction: "true"
