@@ -61,8 +61,8 @@ jobs:
           EAS_DASHBOARD_URL=$(echo "$OUTPUT" | grep -oP 'EAS Dashboard\s+\Khttps://expo.dev/accounts/[^ ]+')
 
           # Parse the account name and project slug dynamically
-          ACCOUNT_NAME=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-3)}')
-          PROJECT_SLUG=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-1)}')
+          ACCOUNT_NAME=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-4)}')
+          PROJECT_SLUG=$(echo "$EAS_DASHBOARD_URL" | awk -F'/' '{print $(NF-2)}')
 
           # Fetch the correct appId using `eas project:info`
           echo "Fetching EAS Project Info..."
