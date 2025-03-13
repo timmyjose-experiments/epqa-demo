@@ -12,6 +12,7 @@ const Demo = () => {
       <Text>Hello</Text>
       <Text>Mundo</Text>
       <Text>Again</Text>
+      <Text>And Again</Text>
       <Pressable
         style={styles.button}
         onPress={() => navigation.navigate('Home')}>
