@@ -11,6 +11,7 @@ const Demo = () => {
     <SafeAreaView style={styles.container}>
       <Text>branch-6</Text>
       <Text>Aloha!</Text>
+      <Text>An-nyong!</Text>
       <Pressable
         style={styles.button}
         onPress={() => navigation.navigate('Home')}>
