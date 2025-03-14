@@ -40,21 +40,11 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Get Current Branch
-        id: current_branch
-        run: echo "branch='${{ github.ref_name }}'" >> $GITHUB_ENV
-
-      - name: Debug branch
-        run: |
-          echo "Current branch = '${{ env.branch }}'"
-          git branch --show-current
-          git log --oneline -n 5
-
       - name: 🚀 Create preview and extract details
         id: create-preview
         run: |
           echo "Using branch: ${{ env.branch }}"
-          OUTPUT=$(eas update --auto --branch "${{ env.branch }}" 2>&1) || {
+          OUTPUT=$(eas update --auto 2>&1) || {
             echo "❌ EAS Update Failed!"
             echo "$OUTPUT"
             exit 1
