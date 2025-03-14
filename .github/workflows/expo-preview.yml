@@ -28,6 +28,18 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.issue.pull_request.head.ref }} 
 
+      - name: Fetch latest branch state
+        run: |
+          git fetch origin ${{ env.branch }} --depth=1
+          git checkout ${{ env.branch }}
+          git pull origin ${{ env.branch }}
+
+      - name: Debug Git State
+        run: |
+          echo "Current Branch: $(git rev-parse --abbrev-ref HEAD)"
+          echo "Latest Commit: $(git rev-parse HEAD)"
+          git log --oneline -n 5
+
       - name: 🏗 Setup Node
         uses: actions/setup-node@v4
         with:
