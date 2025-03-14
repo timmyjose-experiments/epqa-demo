@@ -9,8 +9,9 @@ const Demo = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text>branch-5</Text>
-      <Text>Why is GitHub not picking the latest commit ref?</Text>
+      <Text>branch-6</Text>
+      <Text>Aloha!</Text>
+      <Text>An-nyong!</Text>
       <Pressable
         style={styles.button}
         onPress={() => navigation.navigate('Home')}>
