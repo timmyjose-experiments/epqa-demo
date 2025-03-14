@@ -10,7 +10,9 @@ const Demo = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Text>Hello</Text>
-      <Text>World</Text>
+      <Text>Mundo</Text>
+      <Text>Again</Text>
+      <Text>And Again</Text>
       <Pressable
         style={styles.button}
         onPress={() => navigation.navigate('Home')}>
