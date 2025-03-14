@@ -44,6 +44,12 @@ jobs:
         id: current_branch
         run: echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_ENV
 
+      - name: Debug branch
+        run: |
+          echo "Current branch = '${{ env.branch }}'"
+          git branch --show-current
+          git long --oneline -n 5
+
       - name: 🚀 Create preview and extract details
         id: create-preview
         run: |
